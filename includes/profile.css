@@ -1,0 +1,57 @@
+body{
+            margin:0;
+            font-family:Arial, sans-serif;
+            background:#f4f6f9;
+        }
+        .container{
+            width:80%;
+            max-width:800px;
+            margin:50px auto;
+        }
+        .profile-card{
+            background:white;
+            padding:30px;
+            border-radius:10px;
+            box-shadow:0 0 10px rgba(0,0,0,.1);
+            text-align:center;
+        }
+        .profile-card img{
+            width:150px;
+            height:150px;
+            border-radius:50%;
+            object-fit:cover;
+            border:4px solid #3498db;
+        }
+        .profile-card h2{
+            margin-top:15px;
+            color:#2c3e50;
+        }
+        .info{
+            margin-top:30px;
+            text-align:left;
+        }
+        .info p{
+            padding:12px;
+            border-bottom:1px solid #ddd;
+            font-size:17px;
+        }
+        .buttons{
+            margin-top:30px;
+        }
+        .btn{
+            display:inline-block;
+            text-decoration:none;
+            padding:12px 20px;
+            margin:5px;
+            border-radius:5px;
+            color:white;
+        }
+        .dashboard{
+            background:#3498db;
+        }
+        .edit{
+            background:#27ae60;
+        }
+        .logout{
+            background:#e74c3c;
+        }
