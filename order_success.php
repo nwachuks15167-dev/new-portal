@@ -19,6 +19,26 @@ session_start();
             ✔
         </div>
         <h1>Order Successful</h1>
+
+        <?php
+        if(isset($_SESSION['success']))
+        {
+        ?>
+
+        <div class="success-message">
+
+        <?php
+        echo $_SESSION['success'];
+        unset($_SESSION['success']);
+        ?>
+
+    </div>
+
+    <?php
+    }
+
+    ?>
+
         <p>
             Thank you for shopping with us.
             <br>

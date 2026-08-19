@@ -8,19 +8,13 @@ $category = isset($_GET['category']) ? trim($_GET['category']) : '';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
 if ($search != '') {
-
     $product = $product->searchProducts($search);
-
 }
 elseif ($category != '') {
-
     $product = $product->getProductsByCategory($category);
-
 }
 else {
-
     $product = $product->getallproduct();
-
 }
 
 
@@ -41,7 +35,6 @@ else {
 
     <?php include "includes/sidebar.php"; ?>
     
-
 <div class="main-content" id="mainContent">
 
     <h2 style="text-align:center;">All Products</h2>
@@ -61,8 +54,28 @@ else {
 
         </form>
 
+</div>
+
         <div class="products-list">
-    <?php while($row = mysqli_fetch_assoc($product)) { ?>
+
+         <?php
+        $total = 0;
+        $productCount = mysqli_num_rows($product);
+
+        if($productCount == 0) { ?>
+
+            <div class="no-result">
+                <p>No result found.</p>
+            </div>
+
+        <?php
+        }
+        else
+        {
+        ?>
+
+    <?php
+    while($row = mysqli_fetch_assoc($product)) { ?>
         <div class="card">
             <img
                 src="uploads/<?php echo $row['image']; ?>"
@@ -111,8 +124,9 @@ else {
 
     <?php } ?>
 
-</div>
+    <?php } ?>
 
+</div>
 
 </div>
 

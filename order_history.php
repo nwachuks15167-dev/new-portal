@@ -21,15 +21,11 @@ $total = 0;
 ?>
 
 <!DOCTYPE html>
-
 <html>
-
 <head>
-
 <title>My Order History</title>
 
- <link rel="stylesheet" href="includes/sidebar.css">
-
+    <link rel="stylesheet" href="includes/sidebar.css">
     <link rel="stylesheet" href="includes/order_history.css">
 
 </head>
@@ -39,55 +35,58 @@ $total = 0;
 
 <div class="main-content" id="mainContent">
 
-<h1>My Order History</h1>
+        <h1>My Order History</h1>
 
-<?php
-if(mysqli_num_rows($orders) > 0)
-{
-while($row = mysqli_fetch_assoc($orders))
-{
+        <?php
+        if(mysqli_num_rows($orders) > 0){
+        while($row = mysqli_fetch_assoc($orders))
+        {
+        ?>
 
-?>
+    <div class="order-card">
 
-<div class="order-card">
+    <div class="order-header">
 
-<div class="order-header">
+        <p>
+        <strong>Order ID:</strong>
+        #<?php echo $row['id']; ?>
+        </p>
 
-<p>
-<strong>Order ID:</strong>
-#<?php echo $row['id']; ?>
-</p>
+        <p>
+        <strong>Date:</strong>
+        <?php echo $row['created_at']; ?>
+        </p>
 
-<p>
-<strong>Date:</strong>
-<?php echo $row['created_at']; ?>
-</p>
+        <p>
+        <strong>Payment:</strong>
+        <?php echo $row['payment_method']; ?>
+        </p>
 
-<p>
-<strong>Payment:</strong>
-<?php echo $row['payment_method']; ?>
-</p>
+        <p>
+        <strong>Payment Status:</strong>
+        <span class="status">
+        <?php echo $row['payment_status']; ?>
+        </span>
+        </p>
 
-<p>
-<strong>Payment Status:</strong>
-<span class="status">
-<?php echo $row['payment_status']; ?>
-</span>
-</p>
+        <p>
+        <strong>Order Status:</strong>
+        <span class="status">
+        <?php echo $row['order_status']; ?>
+        </span>
+        </p>
 
-<p>
-<strong>Order Status:</strong>
-<span class="status">
-<?php echo $row['order_status']; ?>
-</span>
-</p>
+        <div class="total">
+        Order Total:
+        ₦<?php echo number_format($row['total_amount']); ?>
+        </div>
 
-</div>
+        </div>
 
-<p>
-<strong>Delivery Address:</strong>
-<?php echo htmlspecialchars($row['address']); ?>
-</p>
+        <p>
+        <strong>Delivery Address:</strong>
+        <?php echo htmlspecialchars($row['address']); ?>
+        </p>
 
 <div class="order-products">
 <?php
@@ -130,14 +129,32 @@ while($item = mysqli_fetch_assoc($items))
     </div>
 
 </div>
+<?php
+}
+?>
+</div>
 
 <?php
+if(
+    trim($row['payment_method']) === 'Cash on Delivery' &&
+    trim($row['payment_status']) === 'pending' &&
+    trim($row['order_status']) === 'Processing'
+){
+?>
+    <form method="POST" action="confirm_payment.php"
+          onsubmit="return confirm('Have you received your order and made the payment?');">
 
+        <input type="hidden" name="order_id" value="<?php echo $row['id']; ?>">
+
+        <button type="submit" name="confirm_payment" class="confirm-payment">
+            I Have Made Payment
+        </button>
+
+    </form>
+<?php
 }
-
 ?>
 
-</div>
 <a
     href="delete_order.php?id=<?php echo $row['id']; ?>"
     onclick="return confirm('Delete this order history?')"

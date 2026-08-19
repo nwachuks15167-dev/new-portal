@@ -17,6 +17,8 @@ $user = new User();
 $product = new Product();
 $Order = new Order();
 
+$totalSpent = $Order->getTotalSpent($user_id);
+
 $totalorders = $Order->getTotalOrders($user_id);
 
 $userData = $user->getUserById($_SESSION['user_id']);
@@ -50,7 +52,6 @@ $recentProducts = $product->getLatestProducts();
 
     <h1 class="dashboard-title">Dashboard</h1>
 
-
     <!-- SUMMARY CARDS -->
 
     <div class="stats">
@@ -78,8 +79,16 @@ $recentProducts = $product->getLatestProducts();
             <p>Orders placed</p>
         </div>
 
-    </div>
+        <div class="card">
+            <div class="card-icon">💰</div>
+            <h3>Total Spent</h3>
+            <h1>
+                ₦<?php echo number_format($totalSpent); ?>
+            </h1>
+            <p>Total Spent</p>
+        </div>
 
+    </div>
 
     <!-- CATEGORY -->
 
@@ -91,43 +100,31 @@ $recentProducts = $product->getLatestProducts();
 
             <a href="products.php?category=Electronics"
                class="category-card">
-
                 <h3>Electronics</h3>
                 <p>View Electronics</p>
-
             </a>
 
             <a href="products.php?category=Furniture"
                class="category-card">
-
                 <h3>Furniture</h3>
                 <p>View Furniture</p>
-
             </a>
 
             <a href="products.php?category=device"
                class="category-card">
-
                 <h3>Device</h3>
                 <p>View Devices</p>
-
             </a>
 
         </div>
 
     </div>
 
-
     <!-- RECENT PRODUCTS -->
-
     <div class="products">
-
         <h2>Recent Products</h2>
-
         <div class="table-container">
-
             <table>
-
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -137,11 +134,8 @@ $recentProducts = $product->getLatestProducts();
                 </thead>
 
                 <tbody>
-
                     <?php while($row = mysqli_fetch_assoc($recentProducts)) { ?>
-
                     <tr>
-
                         <td>
                             <?php echo htmlspecialchars($row['product_name']); ?>
                         </td>
@@ -153,19 +147,14 @@ $recentProducts = $product->getLatestProducts();
                         <td>
                             <?php echo htmlspecialchars($row['category']); ?>
                         </td>
-
                     </tr>
 
                     <?php } ?>
 
                 </tbody>
-
             </table>
-
         </div>
-
     </div>
-
 </div>
 
 <script src="includes/sidebar.js"></script>

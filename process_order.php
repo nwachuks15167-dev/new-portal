@@ -17,14 +17,23 @@ if(!isset($_POST['checkout']))
 }
 
 $user_id = $_SESSION['user_id'];
+
 $address = trim($_POST['address']);
+
 $total_amount = $_POST['total_amount'];
+
 $payment_method = $_POST['payment_method'];
 
 $order = new Order();
 
-// Create Order
-$order_id = $order->createOrder($user_id, $address, $total_amount, $payment_method);
+
+// Create order
+$order_id = $order->createOrder(
+    $user_id,
+    $address,
+    $total_amount,
+    $payment_method
+);
 
 // Check if order was created
 if(!$order_id)
@@ -34,25 +43,51 @@ if(!$order_id)
     exit();
 }
 
-// Save every product in cart into order_items
-$order->saveOrderItems($order_id, $user_id);
-
-// Redirect depending on payment method
-if($payment_method == "Bank Transfer")
+// Save products into order_items
+if(!$order->saveOrderItems($order_id, $user_id))
 {
-    header("Location: bank_transfer.php?order_id=".$order_id);
-   exit();
+    $_SESSION['error'] = "Unable to save order products.";
+    header("Location: checkout.php");
+    exit();
 }
 
+// BANK TRANSFER
+if($payment_method == "Bank Transfer")
+{
+    header(
+        "Location: bank_transfer.php?order_id=".$order_id
+    );
+    exit();
+}
+
+// CASH ON DELIVERY
 if($payment_method == "Cash on Delivery")
 {
-    // Optional: update payment status
-    $order->updateOrderStatus($order_id,"pending","Processing");
-     // Now reduce stock
-    $order->reduceProductQuantity($order_id);
-    // Now clear My Products
-    $order->clearUserProducts($user_id);
-    header("Location: order_success.php?order_id=".$order_id);
+    $order->updateOrderStatus(
+        $order_id,
+        "pending",
+        "Processing"
+    );
+    // Reduce stock
+    if(!$order->reduceProductQuantity($order_id))
+    {
+        $_SESSION['error'] =
+            "Product quantity could not be updated.";
+        header("Location: checkout.php");
+        exit();
+    }
+    // Clear user's My Products
+    if(!$order->clearUserProducts($user_id))
+    {
+        $_SESSION['error'] =
+            "Products could not be cleared.";
+        header("Location: checkout.php");
+        exit();
+    }
+    header(
+        "Location: order_success.php?order_id=".$order_id
+    );
+
     exit();
 }
 

@@ -22,6 +22,35 @@ exit();
     }
 
 /*
+
+$totalSpent = $Order->getTotalSpent($user_id);
+
+<div class="card">
+            <div class="card-icon">💰</div>
+            <h3>Total Spent</h3>
+            <h1>
+                ₦<?php echo number_format($totalSpent['total_spent'] ?? 0); ?>
+            </h1>
+            <p>Amount spent on orders</p>
+        </div>
+
+
+public function getTotalSpent($user_id)
+    {
+        $sql = "SELECT SUM(total_amount) AS total_spent
+            FROM orders
+            WHERE user_id = '$user_id'
+            AND payment_status = 'paid'";
+
+        $result = mysqli_query($this->conn, $sql);
+
+        $row = mysqli_fetch_assoc($result);
+
+        return $row['total'];
+    }
+
+
+
 <!-- All Users -->
     <h3>All Users</h3>
     <div class="users-grid">

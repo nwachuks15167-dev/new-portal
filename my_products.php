@@ -2,8 +2,6 @@
 
 session_start();
 
-//include "includes/sidebar.php";
-
 require_once "classes/Product.php";
 
 $product = new Product();
@@ -43,10 +41,9 @@ $result = $product->getProductsByUser($user_id);
 <head>
     
     <title>My Products</title>
-
     <link rel="stylesheet" href="includes/sidebar.css">
-
     <link rel="stylesheet" href="includes/my_product.css">
+
 </head>
 
 <body>
@@ -88,9 +85,11 @@ if($productCount > 0)
             <img
             src="uploads/<?php echo $row['image']; ?>"
             alt="Product Image">
+            
             <h3>
                 <?php echo $row['product_name']; ?>
             </h3>
+
             <p class="price">
                 ₦<?php echo number_format($row['price']); ?>
             </p>

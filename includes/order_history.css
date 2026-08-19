@@ -135,12 +135,14 @@ body {
 }
 .order-total {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
-    gap: 15px;
-    margin-top: 25px;
-    padding-top: 20px;
+    margin-top: 20px;
+    padding-top: 15px;
     border-top: 2px solid #eeeeee;
+    font-size: 18px;
+    font-weight: bold;
+    color: #222;
 }
 .order-total h3 {
     margin: 0;

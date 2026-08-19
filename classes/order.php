@@ -14,7 +14,7 @@ class Order extends Database{
         $sql = "INSERT INTO orders
                 (user_id,address,total_amount,payment_method,payment_status,order_status)
             VALUES
-            ('$user_id','$address','$total_amount','$payment_method','Pending','Pending')";
+            ('$user_id','$address','$total_amount','$payment_method','pending','processing')";
             mysqli_query($this->conn, $sql);
 
         return mysqli_insert_id($this->conn);
@@ -123,11 +123,11 @@ class Order extends Database{
         {
             return false;
         }
+
         if(mysqli_num_rows($cart) == 0)
         {
             return false;
         }
-
         while($row = mysqli_fetch_assoc($cart))
         {
         $product_id = (int)$row['product_id'];
@@ -201,28 +201,89 @@ class Order extends Database{
     }
 
     public function getTotalOrders($user_id)
-{
-    $sql = "SELECT COUNT(*) AS total_orders
+    {
+        $sql = "SELECT COUNT(*) AS total_orders
             FROM orders
             WHERE user_id = '$user_id'";
 
-    $result = mysqli_query($this->conn, $sql);
+        $result = mysqli_query($this->conn, $sql);
 
-    return mysqli_fetch_assoc($result);
-}
+        return mysqli_fetch_assoc($result);
+    }
 
     public function getTotalSpent($user_id)
     {
-        $sql = "SELECT COALESCE(SUM(total_amount), 0) AS total
+        $sql = "SELECT SUM(total_amount) AS total_spent
             FROM orders
-            WHERE user_id = '$user_id'
-            AND payment_status = 'paid'";
+            WHERE user_id='$user_id'
+            AND payment_status='paid'";
+
+        $result = mysqli_query($this->conn, $sql);
+        if(!$result)
+        {
+            return 0;
+        }
+        $row = mysqli_fetch_assoc($result);
+        return $row['total_spent'] ?? 0;
+    }
+
+    public function confirmCashOnDelivery($order_id, $user_id)
+    {
+        $order_id = (int)$order_id;
+        $user_id = (int)$user_id;
+
+        $sql = "UPDATE orders
+            SET payment_status = 'paid',
+                order_status = 'delivered'
+            WHERE id = '$order_id'
+            AND user_id = '$user_id'
+            AND payment_method = 'Cash on Delivery'
+            AND payment_status = 'pending'
+            AND order_status = 'processing'";
 
         $result = mysqli_query($this->conn, $sql);
 
-        $row = mysqli_fetch_assoc($result);
+        if(!$result)
+        {
+            return false;
+        }
 
-        return $row['total'];
+        if(mysqli_affected_rows($this->conn) == 0)
+        {
+            return false;
+        }
+
+        return true;
     }
+
+    public function confirmBankTransferPayment($order_id, $user_id)
+    {
+        $order_id = (int)$order_id;
+        $user_id = (int)$user_id;
+
+        $sql = "UPDATE orders
+            SET payment_status = 'paid',
+                order_status = 'processing'
+            WHERE id='$order_id'
+            AND user_id='$user_id'
+            AND payment_method='Bank Transfer'
+            AND payment_status='pending'
+            AND order_status='processing'";
+
+        $result = mysqli_query($this->conn, $sql);
+
+        if(!$result)
+        {
+            return false;
+        }
+
+        if(mysqli_affected_rows($this->conn) == 0)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
 
 }

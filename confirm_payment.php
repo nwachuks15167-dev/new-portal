@@ -4,19 +4,34 @@ session_start();
 
 require_once "classes/Order.php";
 
+
+// Make sure user is logged in
 if(!isset($_SESSION['user_id']))
 {
     header("Location: login.php");
     exit();
 }
 
-if(!isset($_POST['order_id']))
+
+// Make sure form was submitted
+if(!isset($_POST['confirm_payment']))
 {
-    header("Location: checkout.php");
+    header("Location: order_history.php");
     exit();
 }
 
-$order_id = $_POST['order_id'];
+
+// Make sure order ID exists
+if(!isset($_POST['order_id']))
+{
+    $_SESSION['error'] = "Invalid order.";
+
+    header("Location: order_history.php");
+    exit();
+}
+
+
+$order_id = (int)$_POST['order_id'];
 
 $user_id = $_SESSION['user_id'];
 
@@ -28,58 +43,50 @@ $data = $order->getOrderById($order_id);
 
 if(!$data)
 {
-    die("Order not found.");
+    $_SESSION['error'] = "Order not found.";
+
+    header("Location: order_history.php");
+    exit();
 }
 
 
 // Check ownership
 if($data['user_id'] != $user_id)
 {
-    die("Unauthorized order.");
-}
+    $_SESSION['error'] = "Unauthorized order.";
 
-
-// Prevent duplicate payment
-if($data['payment_status'] == "Paid")
-{
-    header(
-        "Location: order_success.php?order_id=".$order_id
-    );
-
+    header("Location: order_history.php");
     exit();
 }
 
 
-// Reduce ONLY the quantity ordered
-if(!$order->reduceProductQuantity($order_id))
+// Make sure this is Cash on Delivery
+if($data['payment_method'] != "Cash on Delivery")
 {
-    die("Product quantity could not be updated.");
+    $_SESSION['error'] =
+        "This is not a Cash on Delivery order.";
+
+    header("Location: order_history.php");
+    exit();
 }
 
 
-// Mark payment as paid
-if(!$order->updateOrderStatus(
-    $order_id,
-    "Paid",
-    "Processing"
-))
+// Confirm COD payment
+if($order->confirmCashOnDelivery($order_id, $user_id))
 {
-    die("Payment could not be confirmed.");
+    $_SESSION['success'] =
+        "Payment confirmed successfully. Your order has been marked as delivered.";
+
+    header("Location: order_history.php");
+    exit();
 }
-
-
-// Remove products from My Products
-if(!$order->clearUserProducts($user_id))
+else
 {
-    die("Products could not be cleared.");
+    $_SESSION['error'] =
+        "Unable to confirm payment. Please try again.";
+
+    header("Location: order_history.php");
+    exit();
 }
-
-
-// Success
-header(
-    "Location: order_success.php?order_id=".$order_id
-);
-
-exit();
 
 ?>

@@ -89,14 +89,6 @@ class product extends Database{
                     return mysqli_query($this->conn, $sql);
     }
 
-    public function getTotalProducts()
-    {
-        $sql ="SELECT COUNT(*) AS total FROM products";
-        $result = mysqli_query($this->conn, $sql);
-        $row = mysqli_fetch_assoc($result);
-        return $row['total'];
-    }
-
     public function countProducts()
     {
         $sql = "SELECT COUNT(*) AS total FROM products";

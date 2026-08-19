@@ -4,7 +4,6 @@ require_once "classes/User.php";
 
 $user  = new User(); // auto connects to database.php
 
-
 if (isset($_POST['register'])) {
     $result = $user->register(
         $_POST['username'],

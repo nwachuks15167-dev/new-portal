@@ -275,224 +275,111 @@ body {
     background: #3498db;
 
     color: white;
-
     transform: translateY(-5px);
-
     box-shadow:
         0 7px 15px rgba(52, 152, 219, 0.25);
 }
-
-
 .category-card h3 {
-
     margin: 0 0 8px;
-
     font-size: 18px;
 }
-
-
 .category-card p {
-
     margin: 0;
-
     color: #6b7280;
-
     font-size: 14px;
 }
-
-
 .category-card:hover p {
-
     color: white;
 }
 
-
-/* =========================================
-   RECENT PRODUCTS
-========================================= */
-
 .products {
-
     width: 100%;
-
     background: white;
-
     padding: 25px;
-
     border-radius: 12px;
-
     border: 1px solid #e5e7eb;
-
     box-shadow:
         0 3px 12px rgba(0, 0, 0, 0.08);
-
     overflow: hidden;
 }
-
-
 .products h2 {
-
     margin: 0 0 20px;
-
     text-align: center;
-
     color: #1f2937;
-
     font-size: 21px;
 }
 
-
-/* =========================================
-   TABLE CONTAINER
-========================================= */
-
 .table-container {
-
     width: 100%;
-
     overflow-x: auto;
 }
 
-
-/* =========================================
-   TABLE
-========================================= */
-
 table {
-
     width: 100%;
-
     min-width: 500px;
-
     border-collapse: collapse;
 }
-
-
 table th {
-
     background: #3498db;
-
     color: white;
-
     padding: 14px;
-
     text-align: left;
-
     font-size: 14px;
 }
-
-
 table td {
-
     padding: 14px;
-
     border-bottom: 1px solid #e5e7eb;
-
     font-size: 14px;
 }
-
-
 table tbody tr:hover td {
-
     background: #f8fafc;
 }
 
-
-/* =========================================
-   TABLET
-========================================= */
-
 @media (max-width: 1100px) {
-
     .stats {
-
         grid-template-columns:
             repeat(2, minmax(0, 1fr));
     }
-
 }
-
-
-/* =========================================
-   SMALL TABLET
-========================================= */
 
 @media (max-width: 800px) {
-
     .main-content {
-
         padding: 25px 20px;
     }
-
-
     .category-cards {
-
         grid-template-columns:
             repeat(2, minmax(0, 1fr));
     }
-
 }
 
-
-/* =========================================
-   MOBILE
-========================================= */
-
 @media (max-width: 600px) {
-
     .main-content {
-
         margin-left: 0;
-
         padding: 20px 15px;
     }
-
-
     .main-content.full {
-
         margin-left: 0;
     }
-
-
     .dashboard-title {
-
         font-size: 25px;
-
         margin-top: 50px;
-
         margin-bottom: 25px;
     }
-
-
     .stats {
-
         grid-template-columns: 1fr;
-
         gap: 15px;
     }
-
-
     .category-cards {
-
         grid-template-columns: 1fr;
     }
-
-
     .category-container {
 
         padding: 18px;
     }
-
-
     .products {
-
         padding: 18px;
     }
-
-
     .card {
-
         padding: 22px 15px;
     }
-
 }

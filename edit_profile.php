@@ -27,7 +27,6 @@ if(isset($_POST['update']))
     if(!empty($_FILES['profile_pic']['name']))
     {
         $profile_pic = time() . "_" . $_FILES['profile_pic']['name'];
-
         move_uploaded_file(
             $_FILES['profile_pic']['tmp_name'],
             "uploads/" . $profile_pic
@@ -62,58 +61,9 @@ if(isset($_POST['update']))
 <html>
 <head>
     <title>Edit Profile</title>
+<link rel="stylesheet" href="includes/edit_profile.css">
 
-    <style>
-
-        body{
-            font-family: Arial, sans-serif;
-            background:#f4f6f9;
-        }
-
-        .container{
-            width:500px;
-            margin:40px auto;
-            background:white;
-            padding:25px;
-            border-radius:10px;
-            box-shadow:0 0 10px rgba(0,0,0,.1);
-        }
-
-        h2{
-            text-align:center;
-        }
-
-        input{
-            width:100%;
-            padding:10px;
-            margin-bottom:15px;
-        }
-
-        button{
-            width:100%;
-            padding:12px;
-            background:#3498db;
-            color:white;
-            border:none;
-            cursor:pointer;
-        }
-
-        img{
-            width:120px;
-            height:120px;
-            border-radius:50%;
-            display:block;
-            margin:10px auto;
-        }
-
-        .message{
-            color:green;
-            text-align:center;
-            margin-bottom:15px;
-        }
-
-    </style>
-
+       
 </head>
 
 <body>

@@ -92,7 +92,7 @@ class Admin extends User
 
     public function addProduct($user_id, $product_name, $price, $description, $image, $quantity, $category, $status)
     {
-    $sql = "INSERT INTO products
+        $sql = "INSERT INTO products
             (user_id, product_name, price, description,
              image, quantity, category, status)
 

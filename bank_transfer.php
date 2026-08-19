@@ -4,7 +4,7 @@ session_start();
 
 require_once "classes/order.php";
 $order = new order();
-$order_id = $_GET['order_id'];
+$order_id = (int)$_GET['order_id'];
 $data = $order->getOrderById($order_id);
 
 ?>
@@ -17,6 +17,7 @@ $data = $order->getOrderById($order_id);
 <link rel="stylesheet" href="includes/bank_transfer.css">
 
 </head>
+
 <body>
 <div class="container">
 <div class="payment-card">
@@ -46,14 +47,17 @@ Please transfer the exact amount shown above to the bank account provided.
 After making the transfer, click the button below to confirm your payment.
 </div>
 
-<form action="confirm_payment.php" method="POST">
+<form action="confirm_bank_payment.php" method="POST">
 
 <input
 type="hidden"
 name="order_id"
 value="<?php echo $order_id; ?>">
 
-<button type="submit">
+<button
+        type="submit"
+        name="confirm_payment"
+    >
 
 I Have Made Payment
 
