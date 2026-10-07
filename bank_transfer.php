@@ -4,7 +4,7 @@ session_start();
 
 require_once "classes/order.php";
 $order = new order();
-$order_id = (int)$_GET['order_id'];
+$order_id = $_GET['order_id'];
 $data = $order->getOrderById($order_id);
 
 ?>

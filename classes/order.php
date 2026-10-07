@@ -130,9 +130,9 @@ class Order extends Database{
         }
         while($row = mysqli_fetch_assoc($cart))
         {
-        $product_id = (int)$row['product_id'];
-        $quantity = (int)$row['quantity'];
-        $price = (float)$row['price'];
+        $product_id = $row['product_id'];
+        $quantity = $row['quantity'];
+        $price = $row['price'];
 
         $insert = "INSERT INTO order_items
                    (order_id, product_id, quantity, price)
@@ -161,8 +161,8 @@ class Order extends Database{
 
         while($row = mysqli_fetch_assoc($result))
         {
-            $product_id = (int)$row['product_id'];
-            $quantity = (int)$row['quantity'];
+            $product_id = $row['product_id'];
+            $quantity = $row['quantity'];
 
             $update = "UPDATE products
                    SET quantity = quantity - $quantity
@@ -207,7 +207,6 @@ class Order extends Database{
             WHERE user_id = '$user_id'";
 
         $result = mysqli_query($this->conn, $sql);
-
         return mysqli_fetch_assoc($result);
     }
 
@@ -229,8 +228,6 @@ class Order extends Database{
 
     public function confirmCashOnDelivery($order_id, $user_id)
     {
-        $order_id = (int)$order_id;
-        $user_id = (int)$user_id;
 
         $sql = "UPDATE orders
             SET payment_status = 'paid',
@@ -247,19 +244,15 @@ class Order extends Database{
         {
             return false;
         }
-
         if(mysqli_affected_rows($this->conn) == 0)
         {
             return false;
         }
-
         return true;
     }
 
     public function confirmBankTransferPayment($order_id, $user_id)
     {
-        $order_id = (int)$order_id;
-        $user_id = (int)$user_id;
 
         $sql = "UPDATE orders
             SET payment_status = 'paid',
@@ -276,12 +269,10 @@ class Order extends Database{
         {
             return false;
         }
-
         if(mysqli_affected_rows($this->conn) == 0)
         {
             return false;
         }
-
         return true;
     }
 

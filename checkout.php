@@ -6,7 +6,7 @@ require_once "classes/Product.php";
 
 $product = new Product();
 
-$user_id = $_SESSION['user_id'];
+$user_id = $_SESSION['user_id'] ?? null;
 
 $products = $product->getProductsByUser($user_id);
 
@@ -37,8 +37,8 @@ $total = 0;
 
 while($row = mysqli_fetch_assoc($products))
 {
- $price = (float)$row['price'];
-    $quantity = (int)$row['quantity'];
+ $price = $row['price'];
+    $quantity = $row['quantity'];
     $subtotal = $price * $quantity;
     $total += $subtotal;
 ?>

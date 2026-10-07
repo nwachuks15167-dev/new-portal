@@ -55,6 +55,23 @@ if(isset($_POST['update']))
     }
 }
 
+if(isset($_POST['change_password']))
+{
+    $success = $user->changePassword(
+        $_SESSION['user_id'],
+        $_POST['new_password'],
+        $_POST['confirm_password']
+    );
+
+    if($success)
+    {
+        $message = "Password changed successfully";
+    }
+    else
+    {
+        $error = "Password change failed";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -122,6 +139,22 @@ if(isset($_POST['update']))
         </button>
 
     </form>
+
+    <form method="POST">
+
+    <h3>Change Password</h3>
+
+    <input type="password" name="new_password"
+           placeholder="New Password">
+
+    <input type="password" name="confirm_password"
+           placeholder="Confirm Password">
+
+    <button type="submit" name="change_password">
+        Change Password
+    </button>
+
+</form>
 
     <br>
 

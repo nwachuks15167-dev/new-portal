@@ -45,7 +45,7 @@ $total = 0;
 
     <div class="order-card">
 
-    <div class="order-header">
+        <div class="order-header">
 
         <p>
         <strong>Order ID:</strong>

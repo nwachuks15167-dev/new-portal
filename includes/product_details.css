@@ -1,0 +1,180 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 30px 20px;
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+
+/* Product Card */
+
+.product-card {
+    width: 75%;
+    max-width: 750px;
+    margin: 20px auto;
+    padding: 30px;
+
+    background: white;
+    border-radius: 15px;
+
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Product Image */
+
+.product-card img {
+    display: block;
+
+    width: 100%;
+    max-width: 450px;
+    height: 280px;
+
+    object-fit: cover;
+
+    margin: 0 auto 25px;
+
+    border-radius: 12px;
+}
+
+
+/* Product Name */
+
+.product-card h3 {
+    text-align: center;
+
+    font-size: 30px;
+    font-weight: 800;
+
+    margin: 15px 0;
+
+    color: #0f172a;
+}
+
+
+/* Price */
+
+.price {
+    text-align: center;
+
+    font-size: 25px;
+    font-weight: 800;
+
+    color: #2563eb;
+
+    margin: 15px 0 25px;
+}
+
+
+/* Details */
+
+.meta {
+    padding: 14px 18px;
+    margin: 12px 0;
+
+    background: #f8fafc;
+
+    border-left: 4px solid #2563eb;
+    border-radius: 8px;
+
+    font-size: 17px;
+    font-weight: 700;
+
+    line-height: 1.5;
+}
+
+
+/* Buttons */
+
+.buttons {
+    text-align: center;
+    margin-top: 25px;
+    margin-bottom: 15px;
+}
+
+.btn {
+    display: inline-block;
+
+    padding: 13px 30px;
+
+    border-radius: 8px;
+
+    text-decoration: none;
+
+    font-size: 17px;
+    font-weight: 800;
+
+    transition: 0.3s;
+}
+
+
+/* Add Product */
+
+.btn.add {
+    background: #2563eb;
+    color: white;
+}
+
+.btn.add:hover {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+}
+
+
+/* Back to Products */
+
+.product-card > .btn {
+    display: block;
+    width: fit-content;
+
+    margin: 15px auto 0;
+
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.product-card > .btn:hover {
+    background: #cbd5e1;
+    transform: translateY(-2px);
+}
+
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+    body {
+        padding: 15px 10px;
+    }
+
+    .product-card {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .product-card img {
+        height: 240px;
+    }
+
+    .product-card h3 {
+        font-size: 25px;
+    }
+
+    .price {
+        font-size: 22px;
+    }
+
+    .meta {
+        font-size: 16px;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+}

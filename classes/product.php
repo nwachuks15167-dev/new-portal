@@ -145,7 +145,7 @@ class product extends Database{
         {
             return false;
         }
-        $stock = (int)$productData['quantity'];
+        $stock = $productData['quantity'];
 
         // Get current cart quantity
         $cart = mysqli_query($this->conn,
@@ -159,7 +159,7 @@ class product extends Database{
             return false;
         }
 
-        $cartQuantity = (int)$cartData['quantity'];
+        $cartQuantity = $cartData['quantity'];
         // Stop when cart quantity reaches available stock
         if($cartQuantity >= $stock)
         {
@@ -197,7 +197,7 @@ class product extends Database{
         }
 
         // Only decrease if quantity is greater than 1
-        if((int)$user_product['quantity'] > 1)
+        if($user_product['quantity'] > 1)
         {
             $update = "UPDATE user_products
                    SET quantity = quantity - 1

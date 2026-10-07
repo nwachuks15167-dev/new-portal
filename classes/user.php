@@ -6,6 +6,7 @@ class User extends Database {
     public function __construct()
     {
         parent::__construct();
+
     }
 
     // Register User
@@ -84,14 +85,28 @@ class User extends Database {
                     email='$email', 
                     phone='$phone', 
                     age='$age',
-                    profile_pic='$profile_pic',
-                    password='$password'
+                    profile_pic='$profile_pic'
                 WHERE id='$id'";
 
         if (mysqli_query($this->conn, $sql)) {
             return true;
         } else {
             return "Update failed: " . mysqli_error($this->conn);
+        }
+    }
+
+    public function changePassword($id, $new, $confirm) {
+        if ($new !== $confirm) {
+            return "Passwords do not match.";
+        }
+
+        $hashed_password = password_hash($new, PASSWORD_DEFAULT);
+        $sql = "UPDATE users SET password='$hashed_password' WHERE id='$id'";
+
+        if (mysqli_query($this->conn, $sql)) {
+            return true;
+        } else {
+            return "Password change failed: " . mysqli_error($this->conn);
         }
     }
 

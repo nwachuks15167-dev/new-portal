@@ -2,17 +2,23 @@
 
 require_once "classes/User.php";
 
-if (!isset($_SESSION['user_id'])) {
+// if (!isset($_SESSION['user_id'])) {
 
-    header("Location: login.php");
+//     header("Location: login.php");
 
-    exit();
+//     exit();
 
-}
+// }
 
 $user = new User();
 
-$userData = $user->getUserById($_SESSION['user_id']);
+$userData = null;
+
+if (isset($_SESSION['user_id'])) {
+
+    $userData = $user->getUserById($_SESSION['user_id']);
+
+}
 
 ?>
 

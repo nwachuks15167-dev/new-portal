@@ -3,19 +3,20 @@ session_start();
 
 require_once __DIR__ . "/classes/Product.php";
 
-$product  = new Product();
+$product = new Product();
+
 $category = isset($_GET['category']) ? trim($_GET['category']) : '';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
 if ($search != '') {
-    $product = $product->searchProducts($search);
+    $products = $product->searchProducts($search);
 }
 elseif ($category != '') {
-    $product = $product->getProductsByCategory($category);
+    $products = $product->getProductsByCategory($category);
 }
 else {
-    $product = $product->getallproduct();
-}
+    $products = $product->getallproduct();
+};
 
 
 ?>
@@ -40,7 +41,6 @@ else {
     <h2 style="text-align:center;">All Products</h2>
 
         <form action="products.php" method="GET" class="search-form">
-
             <input 
                 type="text"
                 name="search"
@@ -54,13 +54,11 @@ else {
 
         </form>
 
-</div>
-
         <div class="products-list">
 
          <?php
         $total = 0;
-        $productCount = mysqli_num_rows($product);
+        $productCount = mysqli_num_rows($products);
 
         if($productCount == 0) { ?>
 
@@ -75,7 +73,7 @@ else {
         ?>
 
     <?php
-    while($row = mysqli_fetch_assoc($product)) { ?>
+    while($row = mysqli_fetch_assoc($products)) { ?>
         <div class="card">
             <img
                 src="uploads/<?php echo $row['image']; ?>"
@@ -90,7 +88,13 @@ else {
                 ₦<?php echo number_format($row['price']); ?>
             </p>
 
-            <p class="meta">
+            <a 
+                    href="product_details.php?id=<?php echo $row['id']; ?>"
+                    class="view-btn">
+                    View Product
+                </a>
+
+            <!-- <p class="meta">
                 Quantity:
                 <?php echo $row['quantity']; ?>
             </p>
@@ -108,7 +112,7 @@ else {
             <p class="meta">
                 Created:
                 <?php echo $row['created_at']; ?>
-            </p>
+            </p> -->
 
             <div class="buttons">
 
@@ -122,9 +126,10 @@ else {
 
         </div>
 
-    <?php } ?>
-
-    <?php } ?>
+    <?php
+        } 
+    }
+    ?>
 
 </div>
 
