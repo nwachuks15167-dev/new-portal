@@ -7,7 +7,15 @@ $product = new Product();
 
 $user_id = $_SESSION['user_id'] ?? null;
 
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+
+// var_dump($page); // Debugging line to check the value of $page
+// exit;
+
+if ($page >= 4 && !isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
 
 $products_per_page = 4;
 
@@ -98,7 +106,7 @@ mysqli_data_seek($products, $start);
             <p>Your password is safely encrypted and your session is fully protected.</p>
         </div>
     </div>
- <div class="products-section">
+ <div class="products-section" id="products">
 
     <h3>Our Products</h3>
     <p>Explore our available products</p>
@@ -179,21 +187,16 @@ mysqli_data_seek($products, $start);
 
         <?php if ($page > 1): ?>
 
-            <a href="index.php?page=<?php echo $page - 1; ?>">
+            <a href="index.php?page=<?php echo $page - 1; ?>#products">
                 Previous
             </a>
 
         <?php endif; ?>
 
 
-        <span>
-            Page <?php echo $page; ?> of <?php echo $total_pages; ?>
-        </span>
-
-
         <?php if ($page < $total_pages): ?>
 
-            <a href="index.php?page=<?php echo $page + 1; ?>">
+            <a href="index.php?page=<?php echo $page + 1; ?>#products">
                 Next Page
             </a>
 

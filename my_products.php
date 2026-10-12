@@ -32,7 +32,14 @@ if(isset($_GET['decrease']))
     exit();
 }
 
-$result = $product->getProductsByUser($user_id);
+$guest_products = $_SESSION['guest_products'] ?? [];
+
+$result = null;
+
+// Logged-in user
+if ($user_id !== null) {
+    $result = $product->getProductsByUser($user_id);
+}
 
 ?>
 
@@ -71,87 +78,138 @@ $result = $product->getProductsByUser($user_id);
 
     <?php } ?>
     <div class="products-list">
-    <?php
-    $total = 0;
-$productCount = mysqli_num_rows($result);
+<?php
 
-if($productCount > 0)
-    {
-        while($row = mysqli_fetch_assoc($result))
-        {
+if ($user_id !== null) {
 
-    ?>
-        <div class="product-card">
-            <img
-            src="uploads/<?php echo $row['image']; ?>"
-            alt="Product Image">
-            
-            <h3>
-                <?php echo $row['product_name']; ?>
-            </h3>
+    // Logged-in user's products
+    $productCount = mysqli_num_rows($result);
 
-            <p class="price">
-                ₦<?php echo number_format($row['price']); ?>
-            </p>
+    if ($productCount > 0) {
 
-            <p>
-                <strong>Category:</strong>
-                <?php echo $row['category']; ?>
-            </p>
+        while ($row = mysqli_fetch_assoc($result)) {
 
-            <p class="description">
-                <?php echo $row['description']; ?>
-            </p>
+            $product_id = $row['product_id'];
 
-            <div class="quantity-box">
-                <a
-                href="my_products.php?decrease=<?php echo $row['product_id']; ?>"
-                class="qty-btn">
+            ?>
 
-                −
+            <div class="product-card">
 
-                </a>
+                <img
+                    src="uploads/<?php echo htmlspecialchars($row['image']); ?>"
+                    alt="Product Image"
+                >
 
-                <span class="quantity">
-                    <?php echo $row['quantity']; ?>
-                </span>
+                <h3><?php echo htmlspecialchars($row['product_name']); ?></h3>
 
-                <a
-                href="my_products.php?increase=<?php echo $row['product_id']; ?>"
-                class="qty-btn">
+                <p class="price">
+                    ₦<?php echo number_format($row['price']); ?>
+                </p>
 
-                +
+                <p>
+                    <strong>Category:</strong>
+                    <?php echo htmlspecialchars($row['category']); ?>
+                </p>
 
-                </a>
-            </div>
+                <p class="description">
+                    <?php echo htmlspecialchars($row['description']); ?>
+                </p>
 
-            <div class="buttons">
+                <div class="quantity-box">
+                    <a
+                        href="my_products.php?decrease=<?php echo $product_id; ?>"
+                        class="qty-btn">−</a>
 
-                <a
-                href="delete_my_product.php?id=<?php echo $row['product_id']; ?>"
-                class="delete"
-                onclick="return confirm('Remove this product?')">
+                    <span class="quantity">
+                        <?php echo $row['quantity']; ?>
+                    </span>
 
-                Remove Product
+                    <a
+                        href="my_products.php?increase=<?php echo $product_id; ?>"
+                        class="qty-btn">+</a>
+                </div>
 
-                </a>
+                <div class="buttons">
+                    <a
+                        href="delete_my_product.php?id=<?php echo $product_id; ?>"
+                        class="delete"
+                        onclick="return confirm('Remove this product?')">
+                        Remove Product
+                    </a>
+                </div>
 
             </div>
-        </div>
 
-    <?php
+            <?php
         }
-    }
-    else
-    {
+
+    } else {
         echo "<h2 class='empty'>No products added yet.</h2>";
     }
 
-    ?>
+} else {
+
+    // Guest user's products
+    $productCount = count($guest_products);
+
+    if ($productCount > 0) {
+
+        foreach ($guest_products as $product_id) {
+
+            $row = $product->getProductById($product_id);
+
+            if (!$row) {
+                continue;
+            }
+
+            ?>
+
+            <div class="product-card">
+
+                <img
+                    src="uploads/<?php echo htmlspecialchars($row['image']); ?>"
+                    alt="Product Image"
+                >
+
+                <h3><?php echo htmlspecialchars($row['product_name']); ?></h3>
+
+                <p class="price">
+                    ₦<?php echo number_format($row['price']); ?>
+                </p>
+
+                <p>
+                    <strong>Category:</strong>
+                    <?php echo htmlspecialchars($row['category']); ?>
+                </p>
+
+                <p class="description">
+                    <?php echo htmlspecialchars($row['description']); ?>
+                </p>
+
+                <div class="buttons">
+                    <a
+                        href="delete_my_product.php?id=<?php echo $product_id; ?>"
+                        class="delete"
+                        onclick="return confirm('Remove this product?')">
+                        Remove Product
+                    </a>
+                </div>
+
+            </div>
+
+            <?php
+        }
+
+    } else {
+        echo "<h2 class='empty'>No products added yet.</h2>";
+    }
+}
+
+?>
 
     </div>
 
-    <?php if($productCount > 0){ ?>
+    <?php if ($user_id !== null && $productCount > 0) { ?>
     <div class="checkout-box">
         <form action="checkout.php" method="POST">
             <button type="submit">
