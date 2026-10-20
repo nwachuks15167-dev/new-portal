@@ -54,29 +54,14 @@ else {
 
         </form>
 
-        <div class="products-list">
+      <div class="products-list">
 
-         <?php
-        $total = 0;
-        $productCount = mysqli_num_rows($products);
+    <?php while ($row = mysqli_fetch_assoc($products)) { ?>
 
-        if($productCount == 0) { ?>
-
-            <div class="no-result">
-                <p>No result found.</p>
-            </div>
-
-        <?php
-        }
-        else
-        {
-        ?>
-
-    <?php
-    while($row = mysqli_fetch_assoc($products)) { ?>
         <div class="card">
+
             <img
-                src="uploads/<?php echo $row['image']; ?>"
+                src="uploads/<?php echo htmlspecialchars($row['image']); ?>"
                 alt="<?php echo htmlspecialchars($row['product_name']); ?>"
             >
 
@@ -88,48 +73,33 @@ else {
                 ₦<?php echo number_format($row['price']); ?>
             </p>
 
-            <a 
-                    href="product_details.php?id=<?php echo $row['id']; ?>"
-                    class="view-btn">
-                    View Product
-                </a>
+            <!-- View Product -->
+            <a
+                href="product_details.php?id=<?php echo (int)$row['id']; ?>"
+                class="view-btn">
+                View Product
+            </a>
 
-            <!-- <p class="meta">
-                Quantity:
-                <?php echo $row['quantity']; ?>
-            </p>
+            <!-- Add to My Products -->
+            <form action="add_to_my_product.php" method="POST">
 
-            <p class="meta">
-                Category:
-                <?php echo htmlspecialchars($row['category']); ?>
-            </p>
+                <input
+                    type="hidden"
+                    name="product_id"
+                    value="<?php echo (int)$row['id']; ?>"
+                >
 
-            <p class="meta">
-                Description:
-                <?php echo htmlspecialchars($row['description']); ?>
-            </p>
+                <input type="hidden" name="quantity" value="1">
 
-            <p class="meta">
-                Created:
-                <?php echo $row['created_at']; ?>
-            </p> -->
+                <button type="submit" class="btn add-btn">
+                    Add to My Products
+                </button>
 
-            <div class="buttons">
-
-                <a
-                    class="btn add"
-                    href="add_to_my_product.php?id=<?php echo $row['id']; ?>">
-                    Add Product
-                </a>
-
-            </div>
+            </form>
 
         </div>
 
-    <?php
-        } 
-    }
-    ?>
+    <?php } ?>
 
 </div>
 

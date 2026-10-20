@@ -60,14 +60,38 @@ if(!$productData)
         <?php echo $productData['created_at']; ?>
     </p>
 
-    <div class="buttons">
 
-        <a 
-            class="btn add"
-            href="add_to_my_product.php?id=<?php echo $productData['id']; ?>">
-            Add Product
-        </a>
-    </div>
+<?php
+$product_id = (int) $productData['id'];
+$stock = (int) $productData['quantity'];
+?>
+
+
+<form action="add_to_my_product.php" method="POST">
+
+    <input
+        type="hidden"
+        name="product_id"
+        value="<?php echo (int) $productData['id']; ?>"
+    >
+
+    <label for="quantity">Quantity:</label>
+
+    <input
+        type="number"
+        id="quantity"
+        name="quantity"
+        value="1"
+        min="1"
+        max="<?php echo (int) $productData['quantity']; ?>"
+        required
+    >
+
+    <button type="submit" class="btn add-btn">
+        Add to My Products
+    </button>
+
+</form>
 
     <br>
 

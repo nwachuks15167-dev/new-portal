@@ -188,3 +188,34 @@ hr {
 .search-form button:hover {
     background: #555;
 }
+
+
+/* Add to My Products button */
+.card form {
+    display: block;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.card .add-btn {
+    display: block;
+    width: 100%;
+    padding: 12px 15px;
+    background: #16803c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+}
+
+.card .add-btn:hover {
+    background: #11632e;
+}
+
+.card .add-btn:active {
+    transform: scale(0.98);
+}

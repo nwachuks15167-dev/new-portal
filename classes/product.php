@@ -236,4 +236,222 @@ class product extends Database{
         return mysqli_query($this->conn, $sql);
     }
 
+    public function mergeSessionCart($user_id, $session_cart)
+{
+    if (empty($session_cart)) {
+        return true;
+    }
+
+    mysqli_begin_transaction($this->conn);
+
+    try {
+        foreach ($session_cart as $product_id => $quantity) {
+            $product_id = (int) $product_id;
+            $quantity = (int) $quantity;
+            $user_id = (int) $user_id;
+
+            if ($product_id < 1 || $quantity < 1) {
+                throw new Exception("Invalid product or quantity.");
+            }
+
+            // Check the product and available stock
+            $stmt = mysqli_prepare(
+                $this->conn,
+                "SELECT quantity FROM products WHERE id = ?"
+            );
+
+            mysqli_stmt_bind_param($stmt, "i", $product_id);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            $product = mysqli_fetch_assoc($result);
+            mysqli_stmt_close($stmt);
+
+            if (!$product) {
+                throw new Exception("Product not found.");
+            }
+
+            $stock = (int) $product['quantity'];
+
+            // Check whether this user already has the product
+            $stmt = mysqli_prepare(
+                $this->conn,
+                "SELECT quantity FROM user_products
+                 WHERE user_id = ? AND product_id = ?"
+            );
+
+            mysqli_stmt_bind_param(
+                $stmt,
+                "ii",
+                $user_id,
+                $product_id
+            );
+
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            $existing = mysqli_fetch_assoc($result);
+            mysqli_stmt_close($stmt);
+
+            $old_quantity = $existing
+                ? (int) $existing['quantity']
+                : 0;
+
+            $new_quantity = $old_quantity + $quantity;
+
+            // Do not allow the cart quantity to exceed stock
+            if ($new_quantity > $stock) {
+                throw new Exception(
+                    "There is not enough stock for product ID $product_id."
+                );
+            }
+
+            if ($existing) {
+                // Update the existing cart row
+                $stmt = mysqli_prepare(
+                    $this->conn,
+                    "UPDATE user_products
+                     SET quantity = ?
+                     WHERE user_id = ? AND product_id = ?"
+                );
+
+                mysqli_stmt_bind_param(
+                    $stmt,
+                    "iii",
+                    $new_quantity,
+                    $user_id,
+                    $product_id
+                );
+            } else {
+                // Add a new cart row
+                $stmt = mysqli_prepare(
+                    $this->conn,
+                    "INSERT INTO user_products
+                     (user_id, product_id, quantity)
+                     VALUES (?, ?, ?)"
+                );
+
+                mysqli_stmt_bind_param(
+                    $stmt,
+                    "iii",
+                    $user_id,
+                    $product_id,
+                    $quantity
+                );
+            }
+
+            if (!mysqli_stmt_execute($stmt)) {
+                mysqli_stmt_close($stmt);
+                throw new Exception("Unable to save cart product.");
+            }
+
+            mysqli_stmt_close($stmt);
+        }
+
+        mysqli_commit($this->conn);
+        return true;
+
+    } catch (Throwable $e) {
+        mysqli_rollback($this->conn);
+        return false;
+    }
+}
+
+
+public function addQuantityToMyProducts($user_id, $product_id, $quantity)
+{
+    $user_id = (int) $user_id;
+    $product_id = (int) $product_id;
+    $quantity = (int) $quantity;
+
+    if ($user_id < 1 || $product_id < 1 || $quantity < 1) {
+        return false;
+    }
+
+    $this->conn->begin_transaction();
+
+    try {
+        $sql = "SELECT quantity
+                FROM products
+                WHERE id = ?
+                FOR UPDATE";
+
+        $stmt = mysqli_prepare($this->conn, $sql);
+        mysqli_stmt_bind_param($stmt, "i", $product_id);
+        mysqli_stmt_execute($stmt);
+
+        $result = mysqli_stmt_get_result($stmt);
+        $productData = mysqli_fetch_assoc($result);
+        mysqli_stmt_close($stmt);
+
+        if (!$productData) {
+            throw new Exception("Product not found.");
+        }
+
+        $stock = (int) $productData['quantity'];
+
+        $sql = "SELECT quantity
+                FROM user_products
+                WHERE user_id = ? AND product_id = ?
+                FOR UPDATE";
+
+        $stmt = mysqli_prepare($this->conn, $sql);
+        mysqli_stmt_bind_param($stmt, "ii", $user_id, $product_id);
+        mysqli_stmt_execute($stmt);
+
+        $result = mysqli_stmt_get_result($stmt);
+        $existing = mysqli_fetch_assoc($result);
+        mysqli_stmt_close($stmt);
+
+        $current = $existing ? (int) $existing['quantity'] : 0;
+
+        if (($current + $quantity) > $stock) {
+            throw new Exception("Selected quantity exceeds stock.");
+        }
+
+        if ($existing) {
+            $newQuantity = $current + $quantity;
+
+            $sql = "UPDATE user_products
+                    SET quantity = ?
+                    WHERE user_id = ? AND product_id = ?";
+
+            $stmt = mysqli_prepare($this->conn, $sql);
+            mysqli_stmt_bind_param(
+                $stmt,
+                "iii",
+                $newQuantity,
+                $user_id,
+                $product_id
+            );
+        } else {
+            $sql = "INSERT INTO user_products
+                    (user_id, product_id, quantity)
+                    VALUES (?, ?, ?)";
+
+            $stmt = mysqli_prepare($this->conn, $sql);
+            mysqli_stmt_bind_param(
+                $stmt,
+                "iii",
+                $user_id,
+                $product_id,
+                $quantity
+            );
+        }
+
+        if (!mysqli_stmt_execute($stmt)) {
+            mysqli_stmt_close($stmt);
+            throw new Exception("Unable to save quantity.");
+        }
+
+        mysqli_stmt_close($stmt);
+        $this->conn->commit();
+
+        return true;
+
+    } catch (Throwable $e) {
+        $this->conn->rollback();
+        return false;
+    }
+}
+
+
 }

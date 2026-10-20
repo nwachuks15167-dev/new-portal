@@ -9,15 +9,12 @@ $user_id = $_SESSION['user_id'] ?? null;
 
 $page = isset($_GET['page']) ? $_GET['page'] : 1;
 
-// var_dump($page); // Debugging line to check the value of $page
-// exit;
-
-if ($page >= 4 && !isset($_SESSION['user_id'])) {
+if ($page >= 3 && !isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
-$products_per_page = 4;
+$products_per_page = 8;
 
 $start = ($page - 1) * $products_per_page;
 
@@ -72,40 +69,6 @@ mysqli_data_seek($products, $start);
     </div>
 </div>
 
-<!-- ===========================
-     FEATURES SECTION
-=========================== -->
-<div class="features">
-    <h3>What We Offer</h3>
-    <p>Everything you need in one place</p>
-
-
-
-    <div class="features-grid">
-        <div class="feature-card">
-            <div class="icon">👤</div>
-            <h4>User Accounts</h4>
-            <p>Create your personal account with a profile picture and manage your details easily.</p>
-        </div>
-
-        <div class="feature-card">
-            <div class="icon">🛒</div>
-            <h4>Browse Products</h4>
-            <p>Explore all available products and add your favourites to your personal page.</p>
-        </div>
-
-        <div class="feature-card">
-            <div class="icon">📋</div>
-            <h4>My Products</h4>
-            <p>Keep track of all the products you have saved in one personal page.</p>
-        </div>
-
-        <div class="feature-card">
-            <div class="icon">🔒</div>
-            <h4>Secure Login</h4>
-            <p>Your password is safely encrypted and your session is fully protected.</p>
-        </div>
-    </div>
  <div class="products-section" id="products">
 
     <h3>Our Products</h3>
@@ -202,6 +165,43 @@ mysqli_data_seek($products, $start);
 
         <?php endif; ?>
 
+    </div>
+
+</div>
+
+<!-- ===========================
+     FEATURES SECTION
+=========================== -->
+<div class="features">
+    <h3>What We Offer</h3>
+    <p>Everything you need in one place</p>
+
+
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="icon">👤</div>
+            <h4>User Accounts</h4>
+            <p>Create your personal account with a profile picture and manage your details easily.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="icon">🛒</div>
+            <h4>Browse Products</h4>
+            <p>Explore all available products and add your favourites to your personal page.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="icon">📋</div>
+            <h4>My Products</h4>
+            <p>Keep track of all the products you have saved in one personal page.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="icon">🔒</div>
+            <h4>Secure Login</h4>
+            <p>Your password is safely encrypted and your session is fully protected.</p>
+        </div>
     </div>
 
 </div>

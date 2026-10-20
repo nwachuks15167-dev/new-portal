@@ -1,128 +1,200 @@
-<?php
 
+<?php
 session_start();
 
 require_once "classes/Product.php";
 
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['redirect_after_login'] = "checkout.php";
+    header("Location: login.php");
+    exit();
+}
+
+$user_id = (int) $_SESSION['user_id'];
+
 $product = new Product();
+$result = $product->getProductsByUser($user_id);
 
-$user_id = $_SESSION['user_id'] ?? null;
-
-$products = $product->getProductsByUser($user_id);
-
+$cart = [];
 $total = 0;
 
+if ($result) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $quantity = (int) $row['quantity'];
+        $price = (float) $row['price'];
+
+        $row['cart_quantity'] = $quantity;
+        $row['subtotal'] = $price * $quantity;
+
+        $cart[] = $row;
+        $total += $row['subtotal'];
+    }
+}
+
+if (empty($cart)) {
+    header("Location: my_products.php");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Checkout</title>
-<link rel="stylesheet" href="includes/checkout.css">
+    <title>Checkout | ELOC STORES</title>
+
+    <link rel="stylesheet" href="includes/checkout.css">
 </head>
+
 <body>
 
-<h2>Checkout</h2>
-<table border="1" cellpadding="10">
-<tr>
-<th>Image</th>
-<th>Product</th>
-<th>Price</th>
-<th>Quantity</th>
-<th>Total</th>
-</tr>
+<div class="checkout-container">
 
-<?php
+    <header class="checkout-header">
+        <div>
+            <p class="brand-name">ELOC STORES</p>
+            <h1>Checkout</h1>
+            <p class="subtitle">Review your order and complete your purchase.</p>
+        </div>
 
-while($row = mysqli_fetch_assoc($products))
-{
- $price = $row['price'];
-    $quantity = $row['quantity'];
-    $subtotal = $price * $quantity;
-    $total += $subtotal;
-?>
+        <a href="dashboard.php" class="back-btn">
+             Dashboard
+        </a>
+    </header>
 
-<tr>
-<td>
-<img src="uploads/<?php echo $row['image']; ?>">
-</td>
+    <div class="checkout-layout">
 
-<td>
-<?php echo $row['product_name']; ?>
-</td>
+        <section class="order-section">
+            <h2>Your Order</h2>
 
-<td>
-₦<?php echo number_format($row['price']); ?>
-</td>
+            <p class="section-description">
+                Review your selected products before placing your order.
+            </p>
 
-<td>
-<?php echo $row['quantity']; ?>
-</td>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
 
-<td>
-₦<?php echo number_format($subtotal); ?>
-</td>
+                    <tbody>
+                    <?php foreach ($cart as $item) { ?>
 
-</tr>
+                        <tr>
+                            <td>
+                                <div class="product-info">
+                                    <img
+                                        src="uploads/<?php echo htmlspecialchars($item['image']); ?>"
+                                        alt="<?php echo htmlspecialchars($item['product_name']); ?>"
+                                        class="product-image"
+                                    >
 
-<?php
-}
-?>
-</table>
+                                    <span>
+                                        <?php echo htmlspecialchars($item['product_name']); ?>
+                                    </span>
+                                </div>
+                            </td>
 
-<div class="grand-total">
-<h2>
-Grand Total
-</h2>
+                            <td>
+                                ₦<?php echo number_format($item['price'], 2); ?>
+                            </td>
 
-<h1>
-₦<?php echo number_format($total); ?>
-</h1>
+                            <td>
+                                <?php echo $item['cart_quantity']; ?>
+                            </td>
+
+                            <td class="subtotal">
+                                ₦<?php echo number_format($item['subtotal'], 2); ?>
+                            </td>
+                        </tr>
+
+                    <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <aside class="summary-section">
+
+            <h2>Order Summary</h2>
+
+            <div class="summary-row">
+                <span>Products</span>
+                <span><?php echo count($cart); ?> item(s)</span>
+            </div>
+
+            <div class="summary-row">
+                <span>Delivery</span>
+                <span>To be arranged</span>
+            </div>
+
+            <div class="total-row">
+                <span>Grand Total</span>
+                <strong>
+                    ₦<?php echo number_format($total, 2); ?>
+                </strong>
+            </div>
+
+            <form action="process_order.php" method="POST">
+
+                <input
+                    type="hidden"
+                    name="total_amount"
+                    value="<?php echo $total; ?>"
+                >
+
+                <div class="form-group">
+                    <label for="address">Delivery Address</label>
+
+                    <textarea
+                        id="address"
+                        name="address"
+                        rows="4"
+                        required
+                        placeholder="Enter your complete delivery address"
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="payment_method">Payment Method</label>
+
+                    <select
+                        id="payment_method"
+                        name="payment_method"
+                        required
+                    >
+                        <option value="">Choose payment method</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                        <option value="Cash on Delivery">Cash on Delivery</option>
+                    </select>
+                </div>
+
+                <button type="submit" name="checkout" class="place-order-btn">
+                    Place Order
+                </button>
+
+                <p class="secure-note">
+                    Please confirm your delivery details before ordering.
+                </p>
+
+            </form>
+
+        </aside>
+
+    </div>
+
+    <footer class="checkout-footer">
+        &copy; <?php echo date('Y'); ?> ELOC STORES. All rights reserved.
+    </footer>
 
 </div>
 
-<form action="process_order.php" method="POST">
-<input
-type="hidden"
-name="total_amount"
-value="<?php echo $total; ?>">
-
-<label>
-Delivery Address
-</label>
-
-<textarea
-name="address"
-required
-placeholder="Enter your house address"></textarea>
-
-<label>
-Payment Method
-</label>
-
-<select
-name="payment_method"
-required>
-<option value="">
-Choose Payment
-</option>
-
-<option value="Bank Transfer">
-Bank Transfer
-</option>
-
-<option value="Cash on Delivery">
-Cash on Delivery
-</option>
-
-</select>
- <button type="submit" name="checkout">
-        Place Order
-    </button>
-</button>
-</form>
-</div>
 </body>
-
 </html>
