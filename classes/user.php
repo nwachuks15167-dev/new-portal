@@ -64,13 +64,6 @@ class User extends Database {
         return false;
     }
 
-    // GET ALL USERS
-    public function getAllUsers() {
-        $sql    = "SELECT * FROM users";
-        $result = mysqli_query($this->conn, $sql);
-        return $result;
-    }
-
     // GET SINGLE USER BY ID
     public function getUserById($id) {
         $sql    = "SELECT * FROM users WHERE id='$id'";
@@ -109,27 +102,6 @@ class User extends Database {
             return "Password change failed: " . mysqli_error($this->conn);
         }
     }
-
-    // DELETE USER
-    public function deleteUser($id) {
-        $sql = "DELETE FROM users WHERE id='$id'";
-        if (mysqli_query($this->conn, $sql)) {
-            return true;
-        } else {
-            return "Delete failed: " . mysqli_error($this->conn);
-        }
-    }
-
-     // Logout User
-    public function logout()
-    {
-        session_unset();
-        session_destroy();
-
-        header("Location: login.php");
-        exit;
-    }
-
     
 }
 ?>

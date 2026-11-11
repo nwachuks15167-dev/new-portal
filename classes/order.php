@@ -20,19 +20,6 @@ class Order extends Database{
         return mysqli_insert_id($this->conn);
     }
 
-    public function addOrderItems($user_id,$order_id)
-    {
-        $sql = "INSERT INTO order_items
-        (order_id, product_id, price, quantity)
-        SELECT '$order_id',products.id,products.price,1
-        FROM user_products
-        INNER JOIN products
-        ON user_products.product_id = products.id
-        WHERE user_products.user_id='$user_id'";
-
-        return mysqli_query($this->conn,$sql);
-    }
-
     public function clearUserProducts($user_id)
     {
         $sql = "DELETE FROM user_products
@@ -73,16 +60,6 @@ class Order extends Database{
         INNER JOIN products
         ON order_items.product_id = products.id
         WHERE order_items.order_id='$order_id'";
-
-        return mysqli_query($this->conn,$sql);
-    }
-
-    public function confirmPayment($order_id)
-    {
-        $sql = "UPDATE orders
-        SET payment_status='Paid',
-        order_status='Processing'
-        WHERE id='$order_id'";
 
         return mysqli_query($this->conn,$sql);
     }
@@ -276,5 +253,29 @@ class Order extends Database{
         return true;
     }
 
+    ###############################################################################
+    public function addOrderItems($user_id,$order_id)
+    {
+        $sql = "INSERT INTO order_items
+        (order_id, product_id, price, quantity)
+        SELECT '$order_id',products.id,products.price,1
+        FROM user_products
+        INNER JOIN products
+        ON user_products.product_id = products.id
+        WHERE user_products.user_id='$user_id'";
+
+        return mysqli_query($this->conn,$sql);
+    }
+
+    public function confirmPayment($order_id)
+    {
+        $sql = "UPDATE orders
+        SET payment_status='Paid',
+        order_status='Processing'
+        WHERE id='$order_id'";
+
+        return mysqli_query($this->conn,$sql);
+    }
 
 }
+

@@ -18,60 +18,154 @@ $products = $admin->getAllProducts();
 <title>Manage Products</title>
 
 <style>
-body{
-    font-family:Arial;
-    background:#f4f4f4;
-    margin:0;
-    padding:30px;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
-.container{
-    width:95%;
-    margin:auto;
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    color: #333;
+    padding: 30px;
 }
-h2{
-    text-align:center;
-    margin-bottom:20px;
+
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
 }
-table{
-    width:100%;
-    border-collapse:collapse;
-    background:#fff;
+
+h2 {
+    font-size: 26px;
+    color: #222;
+    margin-bottom: 25px;
+    border-left: 5px solid #2563eb;
+    padding-left: 12px;
 }
-table th{
-    background:#343a40;
-    color:#fff;
-    padding:15px;
+
+/* Table container */
+.container {
+    overflow-x: auto;
 }
-table td{
-    padding:12px;
-    border-bottom:1px solid #ddd;
-    text-align:center;
+
+table {
+    width: 100%;
+    min-width: 1050px;
+    border-collapse: collapse;
+    text-align: left;
 }
-img{
-    width:80px;
-    height:80px;
-    object-fit:cover;
+
+th {
+    background: #1e293b;
+    color: white;
+    padding: 15px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
 }
-.btn{
-    padding:8px 15px;
-    color:white;
-    text-decoration:none;
-    border-radius:5px;
-    margin:2px;
-    display:inline-block;
+
+td {
+    padding: 13px 12px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    vertical-align: middle;
 }
-.edit{
-    background:#007bff;
+
+tr:hover td {
+    background: #f8fafc;
 }
-.delete{
-    background:red;
+
+td img {
+    width: 55px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #eee;
 }
-.approve{
-    background:green;
+
+/* Status labels */
+.status {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
 }
-.reject{
-    background:orange;
+
+.available {
+    background: #dcfce7;
+    color: #15803d;
 }
+
+.deleted {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+/* Action buttons */
+.btn {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 3px;
+    transition: 0.2s;
+}
+
+.edit {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.edit:hover {
+    background: #2563eb;
+    color: white;
+}
+
+.delete {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.delete:hover {
+    background: #dc2626;
+    color: white;
+}
+
+.restore {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.restore:hover {
+    background: #16a34a;
+    color: white;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    body {
+        padding: 12px;
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+}
+
 </style>
 
 </head>
@@ -94,6 +188,7 @@ img{
 <th>Category</th>
 <th>Owner</th>
 <th>Users</th>
+<th>Status</th>
 <th>Action</th>
 
 </tr>
@@ -162,17 +257,38 @@ else
 </td>
 
 <td>
-<a class="btn edit"
-href="edit_product.php?id=<?php echo $row['id']; ?>">
-Edit
-</a>
+    <?php if($row['is_deleted'] == 1) { ?>
 
-<a class="btn delete"
-href="delete_product.php?id=<?php echo $row['id']; ?>"
-onclick="return confirm('Delete Product?')">
-Delete
-</a>
+        <span class="status deleted">Deleted</span>
 
+    <?php } else { ?>
+
+        <span class="status available">Available</span>
+
+    <?php } ?>
+</td>
+
+<td>
+    <a class="btn edit"
+       href="edit_product.php?id=<?php echo $row['id']; ?>">
+       Edit
+    </a>
+
+    <?php if($row['is_deleted'] == 1) { ?>
+
+        <a class="btn restore"
+           href="restore_product.php?id=<?php echo $row['id']; ?>">
+           Restore
+        </a>
+
+    <?php } else { ?>
+
+        <a class="btn delete"
+           href="delete_product.php?id=<?php echo $row['id']; ?>">
+           Delete
+        </a>
+
+    <?php } ?>
 </td>
 
 </tr>

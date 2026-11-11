@@ -48,12 +48,6 @@ class Admin extends User
         return mysqli_query($this->conn,$sql);
     }
 
-    public function deleteProduct($id)
-    {
-        $sql = "DELETE FROM products WHERE id='$id'";
-        return mysqli_query($this->conn, $sql);
-    }
-
     public function getTotalUsers()
     {
         $sql = "SELECT COUNT(*) AS total FROM users";
@@ -77,29 +71,19 @@ class Admin extends User
         return mysqli_fetch_assoc($result);
     }
 
-    public function getProductById($id)
-    {
-        $sql = "SELECT * FROM products WHERE id='$id'";
-        $result = mysqli_query($this->conn, $sql);
-        return mysqli_fetch_assoc($result);
-    }
-
     public function editUser($id, $username, $email, $phone, $age, $role)
     {
         $sql = "UPDATE users SET username='$username', email='$email', phone='$phone', age='$age', role='$role' WHERE id='$id'";
         return mysqli_query($this->conn, $sql);
     }
 
-    public function addProduct($user_id, $product_name, $price, $description, $image, $quantity, $category, $status)
+    public function restoreProduct($id)
     {
-        $sql = "INSERT INTO products
-            (user_id, product_name, price, description,
-             image, quantity, category, status)
+        $query = "UPDATE products 
+              SET is_deleted = 0 
+              WHERE id = '$id'";
 
-            VALUES
-            ('$user_id', '$product_name', '$price', '$quantity', '$category', '$description', '$image', '$status')";
-
-            return mysqli_query($this->conn, $sql);
+        return mysqli_query($this->conn, $query);
     }
 
 }

@@ -8,18 +8,22 @@ class product extends Database{
         parent::__construct();
     }
 
-    public function getallproduct()
-    {
-        $sql = "SELECT *
+   public function getallproduct()
+{
+    $sql = "SELECT *
             FROM products
+            WHERE is_deleted = 0
             ORDER BY id DESC";
-        $result = mysqli_query($this->conn, $sql);
-        if(!$result)
-        {
-            return false;
-        }
-        return $result;
+
+    $result = mysqli_query($this->conn, $sql);
+
+    if(!$result)
+    {
+        return false;
     }
+
+    return $result;
+}
 
     public function addproduct($user_id, $product_name, $price, $description, $image, $quantity, $category)
     {
@@ -28,29 +32,6 @@ class product extends Database{
         VALUES
         ('$user_id', '$product_name', '$price', '$description', '$image', '$quantity', '$category')";
         return mysqli_query($this->conn, $sql);
-    }
-
-    public function addToMyProducts($user_id, $product_id)
-    {
-    // Check if product already exists in user's personal products
-        $check = mysqli_query(
-        $this->conn,
-        "SELECT * FROM user_products
-         WHERE user_id='$user_id'
-         AND product_id='$product_id'");
-
-        if(mysqli_num_rows($check) > 0)
-        {
-            return false;
-        }
-
-    // Add product to user's personal page
-        $sql = "INSERT INTO user_products
-            (user_id, product_id, quantity)
-            VALUES
-            ('$user_id','$product_id',1)";
-
-        return mysqli_query($this->conn,$sql);
     }
 
     public function getproductbyid($id)
@@ -70,6 +51,7 @@ class product extends Database{
             INNER JOIN products
             ON user_products.product_id = products.id
             WHERE user_products.user_id='$user_id'
+            AND products.is_deleted = 0
             ORDER BY user_products.id DESC";
 
         return mysqli_query($this->conn,$sql);
@@ -108,20 +90,23 @@ class product extends Database{
 
     public function getLatestProducts($limit = 5)
     {
-        $sql = "SELECT *FROM products ORDER BY created_at DESC LIMIT $limit";
+        $sql = "SELECT *FROM products WHERE is_deleted = 0 ORDER BY created_at DESC LIMIT $limit";
         $result = mysqli_query($this->conn, $sql);
         return $result;
     }
 
-    public function deleteproduct($id)
-    {
-        $sql = "DELETE FROM products WHERE id='$id'";
-        if (mysqli_query($this->conn, $sql)) {
-            return true;
-        } else {
-            return "Delete failed: " . mysqli_error($this->conn);
-        }
-    }
+
+public function deleteProduct($product_id)
+{
+    $product_id = (int) $product_id;
+
+    $sql = "UPDATE products
+            SET is_deleted = 1
+            WHERE id = '$product_id'";
+
+    return mysqli_query($this->conn, $sql);
+}
+
 
     public function deletemyproduct($user_id, $product_id)
     {
@@ -214,10 +199,10 @@ class product extends Database{
     {
         $category = mysqli_real_escape_string($this->conn, $category);
 
-        $sql = "SELECT *
-            FROM products
-            WHERE category = '$category'
-            ORDER BY id DESC";
+        $sql = "SELECT * FROM products
+                WHERE is_deleted = 0
+                AND category = '$category'
+                ORDER BY id DESC";
 
         return mysqli_query($this->conn, $sql);
     }
@@ -228,9 +213,10 @@ class product extends Database{
 
         $sql = "SELECT *
             FROM products
-            WHERE product_name LIKE '%$search%'
+            WHERE is_deleted = 0
+            AND (product_name LIKE '%$search%'
             OR category LIKE '%$search%'
-            OR description LIKE '%$search%'
+            OR description LIKE '%$search%')
             ORDER BY id DESC";
 
         return mysqli_query($this->conn, $sql);
@@ -372,6 +358,7 @@ public function addQuantityToMyProducts($user_id, $product_id, $quantity)
         $sql = "SELECT quantity
                 FROM products
                 WHERE id = ?
+                AND is_deleted = 0
                 FOR UPDATE";
 
         $stmt = mysqli_prepare($this->conn, $sql);
@@ -452,6 +439,5 @@ public function addQuantityToMyProducts($user_id, $product_id, $quantity)
         return false;
     }
 }
-
 
 }
